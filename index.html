@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Score Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'primary-dark': '#4A49B0',
+                        'primary-light': '#8281E8',
+                    },
+                },
+            },
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        /* Custom styles */
+        .ap-score-badge {
+            transition: all 0.3s ease;
+        }
+        .shadow-floating {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .dark .shadow-floating {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+        .score-animation {
+            animation: pulse 1.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-primary dark:text-primary-light mb-2">AP Score Calculator</h1>
+            <p class="text-gray-600 dark:text-gray-400">Estimate your AP exam score and see what it means for college credit</p>
+        </div>
+
+        <!-- Main calculator card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-floating p-6 mb-8 transition-all duration-300">
+            <!-- Calculator inputs -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="mb-6">
+                        <label for="exam-select" class="block text-sm font-medium mb-2">AP Exam Subject</label>
+                        <select id="exam-select" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary text-base">
+                            <option value="">Select an AP Exam</option>
+                            <optgroup label="Math & Sciences">
+                                <option value="calc-ab">Calculus AB</option>
+                                <option value="calc-bc">Calculus BC</option>
+                                <option value="stats">Statistics</option>
+                                <option value="bio">Biology</option>
+                                <option value="chem">Chemistry</option>
+                                <option value="physics-1">Physics 1</option>
+                                <option value="physics-2">Physics 2</option>
+                                <option value="physics-c-mech">Physics C: Mechanics</option>
+                                <option value="physics-c-em">Physics C: Electricity & Magnetism</option>
+                                <option value="comp-sci-a">Computer Science A</option>
+                                <option value="comp-sci-p">Computer Science Principles</option>
+                                <option value="env-sci">Environmental Science</option>
+                            </optgroup>
+                            <optgroup label="English & History">
+                                <option value="eng-lang">English Language & Composition</option>
+                                <option value="eng-lit">English Literature & Composition</option>
+                                <option value="us-hist">U.S. History</option>
+                                <option value="world-hist">World History</option>
+                                <option value="euro-hist">European History</option>
+                                <option value="gov-us">U.S. Government & Politics</option>
+                                <option value="gov-comp">Comparative Government & Politics</option>
+                                <option value="human-geo">Human Geography</option>
+                            </optgroup>
+                            <optgroup label="Languages">
+                                <option value="spanish-lang">Spanish Language & Culture</option>
+                                <option value="spanish-lit">Spanish Literature & Culture</option>
+                                <option value="french-lang">French Language & Culture</option>
+                                <option value="german-lang">German Language & Culture</option>
+                                <option value="chinese-lang">Chinese Language & Culture</option>
+                                <option value="japanese-lang">Japanese Language & Culture</option>
+                                <option value="italian-lang">Italian Language & Culture</option>
+                                <option value="latin">Latin</option>
+                            </optgroup>
+                            <optgroup label="Social Sciences & Arts">
+                                <option value="psych">Psychology</option>
+                                <option value="econ-micro">Microeconomics</option>
+                                <option value="econ-macro">Macroeconomics</option>
+                                <option value="art-hist">Art History</option>
+                                <option value="music-theory">Music Theory</option>
+                                <option value="art-drawing">Art & Design: Drawing</option>
+                                <option value="art-2d">Art & Design: 2-D Design</option>
+                                <option value="art-3d">Art & Design: 3-D Design</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="mc-correct" class="block text-sm font-medium mb-2">Multiple Choice Correct</label>
+                        <input type="number" id="mc-correct" min="0" placeholder="Number of correct MC answers" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary text-base">
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="mc-total" class="block text-sm font-medium mb-2">Multiple Choice Total</label>
+                        <input type="number" id="mc-total" min="0" placeholder="Total number of MC questions" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary text-base">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="mb-6">
+                        <label for="frq-points" class="block text-sm font-medium mb-2">Free Response Points Earned</label>
+                        <input type="number" id="frq-points" min="0" placeholder="Points earned on free response" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary text-base">
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="frq-total" class="block text-sm font-medium mb-2">Free Response Total Points</label>
+                        <input type="number" id="frq-total" min="0" placeholder="Total possible free response points" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary text-base">
+                    </div>
+
+                    <div class="flex items-center mb-6">
+                        <input type="checkbox" id="guessing-penalty" class="w-5 h-5 rounded text-primary focus:ring-primary">
+                        <label for="guessing-penalty" class="ml-2 text-sm">Apply guessing penalty (pre-2021 exams)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculate button -->
+            <div class="text-center mt-2">
+                <button id="calculate-btn" class="bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    Calculate AP Score
+                </button>
+            </div>
+        </div>
+
+        <!-- Results card -->
+        <div id="results-container" class="bg-white dark:bg-gray-800 rounded-xl shadow-floating p-6 mb-8 hidden transition-all duration-300">
+            <h2 class="text-xl font-bold mb-4 text-center">Your Estimated AP Score</h2>
+            
+            <div class="flex flex-col items-center justify-center mb-6">
+                <div id="score-circle" class="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold text-white mb-4 ap-score-badge">?</div>
+                <div id="score-text" class="text-lg font-medium text-center"></div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold mb-3">What This Score Means</h3>
+                <div id="score-meaning" class="text-gray-600 dark:text-gray-400"></div>
+            </div>
+        </div>
+
+        <!-- Information accordion -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-floating transition-all duration-300">
+            <div class="accordion">
+                <!-- Accordion item 1 -->
+                <div class="accordion-item border-b border-gray-200 dark:border-gray-700">
+                    <button class="accordion-header w-full text-left p-5 font-semibold flex justify-between items-center">
+                        <span>About AP Scoring</span>
+                        <svg class="w-5 h-5 accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="accordion-content hidden p-5 text-gray-600 dark:text-gray-400">
+                        <p class="mb-3">AP exams are scored on a scale from 1 to 5:</p>
+                        <ul class="list-disc ml-6 mb-3 space-y-1">
+                            <li><strong>5</strong> - Extremely well qualified</li>
+                            <li><strong>4</strong> - Well qualified</li>
+                            <li><strong>3</strong> - Qualified</li>
+                            <li><strong>2</strong> - Possibly qualified</li>
+                            <li><strong>1</strong> - No recommendation</li>
+                        </ul>
+                        <p>Each AP exam consists of multiple-choice questions and free-response questions. The College Board uses a weighted combination of these scores to determine the final AP score.</p>
+                        <p class="mt-3">Note: This calculator provides an <em>estimate</em> based on typical scoring patterns. Actual AP score cutoffs vary slightly from year to year.</p>
+                    </div>
+                </div>
+                
+                <!-- Accordion item 2 -->
+                <div class="accordion-item border-b border-gray-200 dark:border-gray-700">
+                    <button class="accordion-header w-full text-left p-5 font-semibold flex justify-between items-center">
+                        <span>College Credit Policies</span>
+                        <svg class="w-5 h-5 accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="accordion-content hidden p-5 text-gray-600 dark:text-gray-400">
+                        <p class="mb-3">College credit policies for AP exams vary by institution. Generally:</p>
+                        <ul class="list-disc ml-6 mb-3 space-y-1">
+                            <li>Most colleges grant credit for scores of 4 or 5</li>
+                            <li>Many colleges also grant credit for scores of 3</li>
+                            <li>Some highly selective institutions may only grant credit for scores of 5</li>
+                            <li>Some colleges use AP scores for placement purposes rather than credit</li>
+                        </ul>
+                        <p>Always check the specific AP credit policy for each college or university you're interested in attending. These policies can usually be found on the school's admissions or registrar's website.</p>
+                    </div>
+                </div>
+                
+                <!-- Accordion item 3 -->
+                <div class="accordion-item">
+                    <button class="accordion-header w-full text-left p-5 font-semibold flex justify-between items-center">
+                        <span>Tips for Success</span>
+                        <svg class="w-5 h-5 accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="accordion-content hidden p-5 text-gray-600 dark:text-gray-400">
+                        <ul class="list-disc ml-6 mb-3 space-y-2">
+                            <li><strong>Use official materials:</strong> Practice with official AP questions from past exams to understand the format and expectations.</li>
+                            <li><strong>Master the rubric:</strong> For free-response questions, understand how points are awarded according to the scoring rubrics.</li>
+                            <li><strong>Focus on concepts:</strong> AP exams test conceptual understanding more than memorization.</li>
+                            <li><strong>Time management:</strong> Practice pacing yourself to complete all sections within the allotted time.</li>
+                            <li><strong>Answer all questions:</strong> For exams without a guessing penalty (all exams since 2021), always answer every question even if you're unsure.</li>
+                            <li><strong>Review scoring guidelines:</strong> The College Board publishes scoring guidelines for past exams that can help you understand how free responses are evaluated.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme toggle button (fixed position) -->
+        <button id="theme-toggle" class="fixed bottom-6 right-6 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-3 rounded-full shadow-lg focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300">
+            <svg id="dark-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+            <svg id="light-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Dark mode detection and toggling
+        const darkIcon = document.getElementById('dark-icon');
+        const lightIcon = document.getElementById('light-icon');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Initialize theme based on user preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Update icon visibility based on current theme
+        function updateThemeIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcon();
+        });
+
+        // Initialize icon visibility
+        updateThemeIcon();
+
+        // Theme toggle button
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            updateThemeIcon();
+        });
+
+        // Accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('.accordion-icon');
+                
+                // Toggle content visibility
+                content.classList.toggle('hidden');
+                
+                // Rotate icon
+                if (content.classList.contains('hidden')) {
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        // AP Score calculation
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const scoreCircle = document.getElementById('score-circle');
+        const scoreText = document.getElementById('score-text');
+        const scoreMeaning = document.getElementById('score-meaning');
+
+        // AP exam data (approximate weightings and cutoffs)
+        const examData = {
+            // Each exam has MC weight (out of 1), and approximate cutoffs for scores 5,4,3,2
+            // These are rough estimates and vary year to year
+            'calc-ab': { mcWeight: 0.5, cutoffs: [0.78, 0.65, 0.55, 0.45] },
+            'calc-bc': { mcWeight: 0.5, cutoffs: [0.80, 0.65, 0.55, 0.45] },
+            'stats': { mcWeight: 0.5, cutoffs: [0.75, 0.64, 0.54, 0.44] },
+            'bio': { mcWeight: 0.6, cutoffs: [0.75, 0.60, 0.50, 0.40] },
+            'chem': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.50, 0.40] },
+            'physics-1': { mcWeight: 0.5, cutoffs: [0.70, 0.55, 0.40, 0.30] },
+            'physics-2': { mcWeight: 0.5, cutoffs: [0.70, 0.55, 0.40, 0.30] },
+            'physics-c-mech': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.50, 0.40] },
+            'physics-c-em': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.50, 0.40] },
+            'comp-sci-a': { mcWeight: 0.65, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'comp-sci-p': { mcWeight: 0.7, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'env-sci': { mcWeight: 0.6, cutoffs: [0.70, 0.55, 0.45, 0.35] },
+            'eng-lang': { mcWeight: 0.45, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'eng-lit': { mcWeight: 0.45, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'us-hist': { mcWeight: 0.4, cutoffs: [0.72, 0.62, 0.52, 0.42] },
+            'world-hist': { mcWeight: 0.4, cutoffs: [0.72, 0.62, 0.52, 0.42] },
+            'euro-hist': { mcWeight: 0.4, cutoffs: [0.72, 0.62, 0.52, 0.42] },
+            'gov-us': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'gov-comp': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'human-geo': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'psych': { mcWeight: 0.67, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'econ-micro': { mcWeight: 0.67, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'econ-macro': { mcWeight: 0.67, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            // For language exams, approximating
+            'spanish-lang': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'spanish-lit': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'french-lang': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'german-lang': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'chinese-lang': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'japanese-lang': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'italian-lang': { mcWeight: 0.5, cutoffs: [0.80, 0.70, 0.60, 0.45] },
+            'latin': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'art-hist': { mcWeight: 0.4, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            'music-theory': { mcWeight: 0.45, cutoffs: [0.75, 0.65, 0.55, 0.45] },
+            // Art & Design portfolios are calculated differently
+            'art-drawing': { mcWeight: 0, cutoffs: [0.85, 0.75, 0.65, 0.50] },
+            'art-2d': { mcWeight: 0, cutoffs: [0.85, 0.75, 0.65, 0.50] },
+            'art-3d': { mcWeight: 0, cutoffs: [0.85, 0.75, 0.65, 0.50] },
+            // Default for any exam not specifically listed
+            'default': { mcWeight: 0.5, cutoffs: [0.75, 0.65, 0.55, 0.45] }
+        };
+
+        // Score descriptions
+        const scoreDescriptions = {
+            5: "Extremely well qualified - College credit or advanced placement likely at most institutions.",
+            4: "Well qualified - College credit or advanced placement likely at many institutions.",
+            3: "Qualified - College credit or advanced placement possible at many institutions.",
+            2: "Possibly qualified - College credit or advanced placement unlikely but possible at some institutions.",
+            1: "No recommendation - No college credit or advanced placement."
+        };
+
+        // Score colors
+        const scoreColors = {
+            5: "#1E88E5", // Blue
+            4: "#43A047", // Green
+            3: "#FDD835", // Yellow
+            2: "#FB8C00", // Orange
+            1: "#E53935"  // Red
+        };
+
+        calculateBtn.addEventListener('click', () => {
+            // Get input values
+            const examType = document.getElementById('exam-select').value;
+            const mcCorrect = parseFloat(document.getElementById('mc-correct').value) || 0;
+            const mcTotal = parseFloat(document.getElementById('mc-total').value) || 0;
+            const frqPoints = parseFloat(document.getElementById('frq-points').value) || 0;
+            const frqTotal = parseFloat(document.getElementById('frq-total').value) || 0;
+            const guessingPenalty = document.getElementById('guessing-penalty').checked;
+            
+            // Validate inputs
+            if (!examType) {
+                alert("Please select an AP exam subject");
+                return;
+            }
+            
+            if (mcTotal === 0 && frqTotal === 0) {
+                alert("Please enter valid numbers for at least one section");
+                return;
+            }
+            
+            if ((mcCorrect > mcTotal) || (frqPoints > frqTotal)) {
+                alert("Points earned cannot exceed total points");
+                return;
+            }
+            
+            // Get exam data or use default
+            const examInfo = examData[examType] || examData['default'];
+            
+            // Calculate weighted score
+            let mcScore = 0;
+            if (mcTotal > 0) {
+                if (guessingPenalty) {
+                    // Old-style with guessing penalty (reduces by 0.25 for each wrong)
+                    const mcWrong = mcTotal - mcCorrect;
+                    mcScore = mcCorrect - (mcWrong * 0.25);
+                    mcScore = Math.max(0, mcScore) / mcTotal;
+                } else {
+                    // Current style (no guessing penalty)
+                    mcScore = mcCorrect / mcTotal;
+                }
+            }
+            
+            let frqScore = 0;
+            if (frqTotal > 0) {
+                frqScore = frqPoints / frqTotal;
+            }
+            
+            // Calculate composite score based on section weights
+            let compositeScore;
+            if (mcTotal > 0 && frqTotal > 0) {
+                compositeScore = (mcScore * examInfo.mcWeight) + (frqScore * (1 - examInfo.mcWeight));
+            } else if (mcTotal > 0) {
+                compositeScore = mcScore;
+            } else {
+                compositeScore = frqScore;
+            }
+            
+            // Map composite score to AP score (5-1)
+            let apScore = 1;
+            for (let i = 0; i < examInfo.cutoffs.length; i++) {
+                if (compositeScore >= examInfo.cutoffs[i]) {
+                    apScore = 5 - i;
+                    break;
+                }
+            }
+            
+            // Display results
+            resultsContainer.classList.remove('hidden');
+            scoreCircle.textContent = apScore;
+            scoreCircle.style.backgroundColor = scoreColors[apScore];
+            scoreText.textContent = `Composite Score: ${Math.round(compositeScore * 100)}%`;
+            scoreMeaning.textContent = scoreDescriptions[apScore];
+            
+            // Add animation to score
+            scoreCircle.classList.add('score-animation');
+            setTimeout(() => {
+                scoreCircle.classList.remove('score-animation');
+            }, 1500);
+            
+            // Scroll to results
+            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    </script>
+</body>
+</html>
